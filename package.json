@@ -1,0 +1,17 @@
+{
+  "name": "resin-cctv",
+  "version": "0.0.1",
+  "description": "Turn your raspberry pi into a CCTV.",
+  "scripts": {
+    "preinstall": "bash deps.sh",
+    "start": "./node_modules/coffee-script/bin/coffee src/app.coffee"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "coffee-script": "1.7.x",
+    "express": "4.4.x",
+	"serve-index": "1.1.x",
+	"moment": "2.8.x"
+  }
+}
