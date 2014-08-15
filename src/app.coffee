@@ -3,8 +3,10 @@ serveIndex = require 'serve-index'
 {exec} = require 'child_process'
 moment = require 'moment'
 fs = require 'fs'
+bodyParser = require 'body-parser'
+dropbox = require './dropbox'
 
-IMG_DIR = '/tmp/camera/'
+IMG_DIR = '/tmp/resin-cctv/'
 
 try
 	fs.mkdirSync(IMG_DIR)
@@ -26,20 +28,45 @@ lastSnapshotPath = null
 takeSnapshot = ->
 	date = moment().format()
 	path = IMG_DIR + date + '.jpg'
-	imageProc = exec('fswebcam -r 1280x720 ' + path)
+	imageProc = exec('fswebcam -r 1280x720 ' + path, (error, stdout, stderr) ->
+		if error?
+			console.log( 'Error taking snapshot: ' + error )
+			return
+		lastSnapshotPath = path
+		dropbox.upload( path, '/' + date + '.jpg', ( err ) ->
+			if err?
+				console.log( 'Error uploading snapshot to dropbox: ' + err )
+				return
+		)
+	)
 	imageProc.stdout.pipe(process.stdout)
-	lastSnapshotPath = path
 
 takeSnapshot() # call once for now, setInterval will call first time in 5s
 setInterval( takeSnapshot, 10000 )
 
 console.log('Setting up web server...')
 app = express()
+app.use(bodyParser.json())
 app.use('/images/', express.static(IMG_DIR))
 app.use('/images/', serveIndex(IMG_DIR, icons: true))
 app.get('/', (req, res) ->
 	if lastSnapshotPath?
-		res.sendFile( lastSnapshotPath )
+		res.sendfile( lastSnapshotPath )
+)
+app.get('/dropbox/authorized', (req, res) ->
+	dropbox.authorized( ( err ) ->
+		res.send( 200, 'OK' )
+	)
+)
+app.get('/dropbox/authorize', (req, res) ->
+	callbackURL = 'http://192.168.10.8:8080/dropbox/authorized';
+	dropbox.authorize( callbackURL, ( err, url ) ->
+		if err?
+			console.log( 'Dropbox uploader error: ' + err )
+			res.send( 500, 'Dropbox uploader error: ' + err )
+		else
+			res.redirect( url )
+	)
 )
 
 port = process.env.PORT || 8080
