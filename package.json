@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "Turn your raspberry pi into a CCTV.",
   "scripts": {
-    "preinstall": "bash deps.sh",
-    "start": "./node_modules/coffee-script/bin/coffee src/app.coffee"
+    "preinstall": "bash deps.sh"
   },
   "author": "",
   "license": "MIT",
