@@ -13,6 +13,7 @@
     "express": "4.4.x",
 	"serve-index": "1.1.x",
 	"moment": "2.8.x",
+	"moment-timezone": "0.2.x",
 	"body-parser": "1.6.x",
 	"string": "1.9.x"
   }
