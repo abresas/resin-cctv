@@ -23,16 +23,21 @@ fs.stat( '/dev/video0', (err, stats) ->
 		console.log('Recognized camera device: /dev/video0')
 )
 
-lastSnapshotPath = null
+lastSnapshot = null
 
 takeSnapshot = ->
-	date = moment().format()
+	mom = moment()
+	date = mom.format()
 	path = IMG_DIR + date + '.jpg'
 	imageProc = exec('fswebcam -r 1280x720 ' + path, (error, stdout, stderr) ->
 		if error?
 			console.log( 'Error taking snapshot: ' + error )
 			return
-		lastSnapshotPath = path
+		lastSnapshot =
+			path: path
+			date: date
+			moment: mom
+			url: '/images/' + date + '.jpg'
 		dropbox.upload( path, '/' + date + '.jpg', ( err ) ->
 			if err?
 				console.log( 'Error uploading snapshot to dropbox: ' + err )
@@ -50,8 +55,8 @@ app.use(bodyParser.json())
 app.use('/images/', express.static(IMG_DIR))
 app.use('/images/', serveIndex(IMG_DIR, icons: true))
 app.get('/', (req, res) ->
-	if lastSnapshotPath?
-		res.sendfile( lastSnapshotPath )
+	if lastSnapshot?
+		res.send( '<html><head><title>Resin CCTV</title><meta http-equiv="refresh" content="5"></head><body><h1>' + lastSnapshot.moment.format( 'LLLL' ) + '</h1><img src="' + lastSnapshot.url + '"></body></html>'  )
 )
 app.get('/dropbox/authorized', (req, res) ->
 	dropbox.authorized( ( err ) ->
