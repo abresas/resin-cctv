@@ -43,7 +43,7 @@ createCamera = ( _opts ) ->
 		mom = moment().tz( opts.timezone )
 		date = mom.format()
 		path = opts.imageDirectory + date + '.jpg'
-		imageProc = exec 'fswebcam -r ' + opts.resolution + ' --timestamp "' + date + '" --title "Resin CCTV" + ' --font /usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf ' + path, (error, stdout, stderr) ->
+		imageProc = exec 'fswebcam -r ' + opts.resolution + ' --timestamp "' + date + '" --title "Resin CCTV" --font /usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf ' + path, (error, stdout, stderr) ->
 			if error?
 				console.log( 'Error taking snapshot: ' + error )
 				return
