@@ -7,6 +7,7 @@ DROPBOX_UPLOADER_CONFIG = process.env.HOME + '/.dropbox_uploader'
 
 auth_proc = null
 auth_proc_dead = false
+authorized = false
 
 exports.authorize = ( callbackURL, cb ) ->
 	appKey = process.env.DROPBOX_APP_KEY
@@ -69,8 +70,11 @@ exports.authorized = ( cb ) ->
 		cb( 'Dropbox uploader process terminated during waiting for approval' )
 	else
 		auth_proc.stdin.write( '\n' )
+		authorized = true
 
 exports.upload = ( localPath, remotePath, cb ) ->
+	if not authorized
+		return
 	proc = spawn( './dropbox_uploader.sh', [ 'upload', localPath, remotePath ] )
 	proc.on( 'close', (code) ->
 		if code isnt 0
