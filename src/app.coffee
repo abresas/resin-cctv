@@ -14,7 +14,7 @@ camera = createCamera
 camera.snapshotLoop( process.env.SNAPSHOT_INTERVAL || 10000 )
 
 camera.on 'snapshot', ( snapshot ) ->
-	dropbox.upload snapshot.path, ( err ) ->
+	dropbox.upload snapshot.path, '/' + snapshot.date, ( err ) ->
 		if err?
 			console.log( 'Error uploading snapshot to dropbox: ' + err )
 			return

@@ -58,7 +58,13 @@ createCamera = ( _opts ) ->
 
 	camera.snapshotLoop = (interval) ->
 		camera.takeSnapshot() # call once for now, setInterval will call first time in 5s
-		setInterval( camera.takeSnapshot, interval )
+		camera.interval = interval
+		setInterval( () ->
+			if lastSnapshot? and moment().diff( lastSnapshot.moment ) < interval
+				return
+			else
+				camera.takeSnapshot()
+		, 100 )
 
 	camera.setup()
 	return camera
