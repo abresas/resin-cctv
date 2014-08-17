@@ -43,7 +43,10 @@ createCamera = ( _opts ) ->
 		mom = moment().tz( opts.timezone )
 		date = mom.format()
 		path = opts.imageDirectory + date + '.jpg'
-		imageProc = exec 'fswebcam -r ' + opts.resolution + ' --timestamp "' + date + '" --title "Resin CCTV" --font /usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf ' + path, (error, stdout, stderr) ->
+		execOpts =
+			timeout: 10000
+		console.log( '[' + date + '] Taking snapshot.' );
+		imageProc = exec 'fswebcam -r ' + opts.resolution + ' --timestamp "' + date + '" --title "Resin CCTV" --font /usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf ' + path, execOpts, (error, stdout, stderr) ->
 			if error?
 				console.log( 'Error taking snapshot: ' + error )
 				return
@@ -57,7 +60,7 @@ createCamera = ( _opts ) ->
 		imageProc.stdout.pipe(process.stdout)
 
 	camera.snapshotLoop = (interval) ->
-		camera.takeSnapshot() # call once for now, setInterval will call first time in 5s
+		camera.takeSnapshot()
 		camera.interval = interval
 		setInterval( () ->
 			if lastSnapshot? and moment().diff( lastSnapshot.moment ) < interval
