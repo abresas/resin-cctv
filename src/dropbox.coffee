@@ -16,7 +16,7 @@ exports.authorize = ( callbackURL, cb ) ->
 		cb( 'You have to set DROPBOX_APP_KEY and DROPBOX_APP_SECRET environment variables from resin dashboard.' )
 		return
 	else
-		console.log( 'Dropbox: Using app key "' + appKey + '" and app secret + "' + appSecret + '".' )
+		console.log( 'Dropbox: Using app key "' + appKey + '" and app secret "' + appSecret + '".' )
 
 	try 
 		fs.unlinkSync( DROPBOX_UPLOADER_CONFIG );

@@ -64,7 +64,7 @@ app.get '/dropbox/authorized', (req, res) ->
 	)
 
 app.get '/dropbox/authorize', (req, res) ->
-	callbackURL = 'http://192.168.10.8:8080/dropbox/authorized';
+	callbackURL = 'http://' + req.host + '/dropbox/authorized';
 	dropbox.authorize callbackURL, ( err, url ) ->
 		if err?
 			console.log( 'Dropbox uploader error: ' + err )
